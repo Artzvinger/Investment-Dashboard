@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stocks    Stock[]
+  transactions Transaction[]
+}
+
+model Stock {
+  id            Int      @id @default(autoincrement())
+  ticker        String
+  name          String
+  quantity      Int
+  purchasePrice Float
+  currentPrice  Float?
+  changePercent Float?
+  lastUpdate    DateTime?
+
+  userId        Int
+  user          User     @relation(fields: [userId], references: [id])
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+  ticker    String
+  type      String
+  quantity  Int
+  price     Float
+  total     Float
+  createdAt DateTime @default(now())
+}
+
+model MacroCache {
+  id          Int      @id @default(autoincrement())
+  moexIndex   Float
+  usdRub      Float
+  keyRate     Float
+  inflation   Float
+  updatedAt   DateTime @default(now())
+}
