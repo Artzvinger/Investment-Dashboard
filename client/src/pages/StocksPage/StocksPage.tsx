@@ -1,5 +1,3 @@
-import React from 'react';
-
 function StocksPage() {
     return (
         <div style={{ marginLeft: '240px', padding: '20px' }}>

@@ -6,8 +6,10 @@ import {
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 
-import Modal from '../../../shared/ui/Modal/Modal';
+import { useStock } from '../../../entities/stock/model/moexQueries';
 import { useCreateStockMutation } from '../../../entities/stock/model/stockQueries';
+import Modal from '../../../shared/ui/Modal/Modal';
+import { getCurrentUserId } from '../../../shared/session';
 
 const stockSchema = z.object({
     ticker: z
@@ -16,7 +18,7 @@ const stockSchema = z.object({
         .max(10, 'Тикер слишком длинный')
         .regex(
             /^[A-Za-z]+$/,
-            'Тикер должен содержать только буквы'
+            'Тикер должен содержать только буквы',
         ),
 
     quantity: z
@@ -39,8 +41,7 @@ const defaultValues: StockFormData = {
 };
 
 function AddAssetForm() {
-    const [isModalOpen, setIsModalOpen] =
-        useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const {
         control,
@@ -52,8 +53,7 @@ function AddAssetForm() {
         defaultValues,
     });
 
-    const createStockMutation =
-        useCreateStockMutation();
+    const createStockMutation = useCreateStockMutation();
 
     const tickerField = useController({
         name: 'ticker',
@@ -70,29 +70,46 @@ function AddAssetForm() {
         control,
     });
 
+    const ticker = tickerField.field.value.trim().toUpperCase();
+
+    const marketQuery = useStock(ticker);
+    const marketStock = marketQuery.data;
+
     const onSubmit = (data: StockFormData) => {
-        const ticker = data.ticker.toUpperCase();
+        if (!marketStock || marketStock.ticker !== ticker) {
+            return;
+        }
 
         createStockMutation.mutate(
             {
-                ticker,
-                name: ticker,
+                ticker: marketStock.ticker,
+                name: marketStock.name,
                 quantity: data.quantity,
                 purchasePrice: data.purchasePrice,
+                userId: getCurrentUserId(),
             },
             {
                 onSuccess: () => {
                     setIsModalOpen(false);
                     reset();
                 },
-            }
+            },
         );
     };
 
     const handleClose = () => {
         setIsModalOpen(false);
         reset();
+        createStockMutation.reset();
     };
+
+    const isMarketDataLoading =
+        ticker.length > 0 && marketQuery.isFetching;
+
+    const hasMarketDataError =
+        ticker.length > 0 &&
+        marketQuery.isError &&
+        !marketQuery.isFetching;
 
     return (
         <>
@@ -138,9 +155,53 @@ function AddAssetForm() {
                         )}
 
                         <div className="add-asset-form__hint">
-                            Введите символ акции
-                            (например, SBER)
+                            Введите тикер акции Московской биржи
                         </div>
+
+                        {isMarketDataLoading && (
+                            <div className="add-asset-form__hint">
+                                Поиск акции...
+                            </div>
+                        )}
+
+                        {hasMarketDataError && (
+                            <div className="add-asset-form__error">
+                                Не удалось получить котировку.
+                                Проверьте тикер и попробуйте ещё раз.
+                            </div>
+                        )}
+
+                        {marketStock && marketStock.ticker === ticker && (
+                            <div className="add-asset-form__hint">
+                                <div>
+                                    Название: {marketStock.name}
+                                </div>
+
+                                <div>
+                                    Текущая цена:{' '}
+                                    {marketStock.currentPrice.toFixed(2)} ₽
+                                </div>
+
+                                {marketStock.changePercent !== null && (
+                                    <div
+                                        style={{
+                                            color:
+                                                marketStock.changePercent > 0
+                                                    ? 'green'
+                                                    : marketStock.changePercent < 0
+                                                        ? 'red'
+                                                        : 'gray',
+                                        }}
+                                    >
+                                        Изменение:{' '}
+                                        {marketStock.changePercent > 0
+                                            ? '+'
+                                            : ''}
+                                        {marketStock.changePercent.toFixed(2)}%
+                                    </div>
+                                )}
+                            </div>
+                        )}
                     </div>
 
                     <div className="add-asset-form__field">
@@ -154,7 +215,7 @@ function AddAssetForm() {
                             {...quantityField.field}
                             onChange={(event) => {
                                 quantityField.field.onChange(
-                                    event.target.valueAsNumber
+                                    event.target.valueAsNumber,
                                 );
                             }}
                             placeholder="Сколько акций купили?"
@@ -184,7 +245,7 @@ function AddAssetForm() {
                             {...purchasePriceField.field}
                             onChange={(event) => {
                                 purchasePriceField.field.onChange(
-                                    event.target.valueAsNumber
+                                    event.target.valueAsNumber,
                                 );
                             }}
                             placeholder="Цена за 1 акцию"
@@ -197,14 +258,23 @@ function AddAssetForm() {
 
                         {errors.purchasePrice && (
                             <div className="add-asset-form__error">
-                                {
-                                    errors
-                                        .purchasePrice
-                                        .message
-                                }
+                                {errors.purchasePrice.message}
+                            </div>
+                        )}
+
+                        {marketStock && marketStock.ticker === ticker && (
+                            <div className="add-asset-form__hint">
+                                Рыночная цена сейчас:{' '}
+                                {marketStock.currentPrice.toFixed(2)} ₽
                             </div>
                         )}
                     </div>
+
+                    {createStockMutation.isError && (
+                        <div className="add-asset-form__error">
+                            Не удалось добавить акцию. Попробуйте ещё раз.
+                        </div>
+                    )}
 
                     <div className="add-asset-form__actions">
                         <button
@@ -219,12 +289,15 @@ function AddAssetForm() {
                             type="submit"
                             className="add-asset-form__submit"
                             disabled={
-                                createStockMutation.isPending
+                                createStockMutation.isPending ||
+                                !marketStock ||
+                                marketStock.ticker !== ticker ||
+                                marketQuery.isFetching
                             }
                         >
                             {createStockMutation.isPending
                                 ? 'Добавление...'
-                                : '✅ Добавить'}
+                                : 'Добавить'}
                         </button>
                     </div>
                 </form>

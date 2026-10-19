@@ -1,4 +1,6 @@
+
 import { useEffect, type ReactNode, type MouseEvent } from 'react';
+import './Modal.css';
 
 interface ModalProps {
     isOpen: boolean;
@@ -8,12 +10,16 @@ interface ModalProps {
 }
 
 function Modal({
-    isOpen,
-    onClose,
-    title,
-    children,
-}: ModalProps) {
+                   isOpen,
+                   onClose,
+                   title,
+                   children,
+               }: ModalProps) {
     useEffect(() => {
+        if (!isOpen) {
+            return;
+        }
+
         const handleEsc = (e: KeyboardEvent) => {
             if (e.key === 'Escape') {
                 onClose();
@@ -25,7 +31,7 @@ function Modal({
         return () => {
             window.removeEventListener('keydown', handleEsc);
         };
-    }, [onClose]);
+    }, [isOpen, onClose]);
 
     if (!isOpen) {
         return null;
@@ -38,18 +44,34 @@ function Modal({
     };
 
     return (
-        <div onClick={handleOverlayClick}>
-            <div>
+        <div
+            className="modal-overlay"
+            onClick={handleOverlayClick}
+        >
+            <div
+                className="modal"
+                role="dialog"
+                aria-modal="true"
+                aria-label={title || 'Диалоговое окно'}
+            >
                 <button
                     type="button"
+                    className="modal__close"
                     onClick={onClose}
+                    aria-label="Закрыть"
                 >
                     ×
                 </button>
 
-                {title && <h2>{title}</h2>}
+                {title && (
+                    <h2 className="modal__title">
+                        {title}
+                    </h2>
+                )}
 
-                {children}
+                <div className="modal__content">
+                    {children}
+                </div>
             </div>
         </div>
     );

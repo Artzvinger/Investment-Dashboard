@@ -12,9 +12,17 @@ export interface Stock {
     updatedAt: string;
 }
 
+export interface MoexStock {
+    ticker: string;
+    name: string;
+    currentPrice: number;
+    changePercent: number | null;
+    lastUpdate: string;
+}
+
 export type CreateStockInput = Pick<
     Stock,
-    'ticker' | 'name' | 'quantity' | 'purchasePrice'
+    'ticker' | 'name' | 'quantity' | 'purchasePrice' | 'userId'
 >;
 
 export type UpdateStockInput = Partial<

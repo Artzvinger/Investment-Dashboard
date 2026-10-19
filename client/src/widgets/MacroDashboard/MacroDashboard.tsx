@@ -1,4 +1,4 @@
-import { useMacroData } from '../../../entities/macro/model/macroQueries';
+import { useMacroData } from '../../entities/macro/model/macroQueries';
 
 import MacroItem from './MacroItem';
 

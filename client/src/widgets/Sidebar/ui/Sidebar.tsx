@@ -1,33 +1,25 @@
-import { Link } from 'react-router';
+import { NavLink } from 'react-router';
 
 function Sidebar() {
     return (
         <aside className="sidebar">
-            <h2 className="sidebar__title">
-                📊 Инвестор
-            </h2>
+            <h2>📊 Инвестиционный дашборд</h2>
 
-            <nav className="sidebar__nav">
-                <Link
+            <nav>
+                <NavLink
                     to="/"
-                    className="sidebar__link"
+                    end
                 >
                     📈 Портфель
-                </Link>
+                </NavLink>
 
-                <Link
-                    to="/stocks"
-                    className="sidebar__link"
-                >
+                <NavLink to="/stocks">
                     📊 Акции
-                </Link>
+                </NavLink>
 
-                <Link
-                    to="/bonds"
-                    className="sidebar__link"
-                >
+                <NavLink to="/bonds">
                     🏦 Облигации
-                </Link>
+                </NavLink>
             </nav>
         </aside>
     );
