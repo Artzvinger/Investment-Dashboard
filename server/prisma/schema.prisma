@@ -23,8 +23,8 @@ model Stock {
   ticker        String
   name          String
   quantity      Int
-  purchasePrice Float
-  currentPrice  Float?
+  purchasePrice Decimal   @db.Decimal(18, 4)
+  currentPrice  Decimal?  @db.Decimal(18, 4)
   changePercent Float?
   lastUpdate    DateTime?
 
@@ -33,6 +33,8 @@ model Stock {
 
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  @@unique([ticker, userId])
 }
 
 model Transaction {
@@ -42,8 +44,8 @@ model Transaction {
   ticker    String
   type      String
   quantity  Int
-  price     Float
-  total     Float
+  price     Decimal  @db.Decimal(18, 4)
+  total     Decimal  @db.Decimal(18, 4)
   createdAt DateTime @default(now())
 }
 

@@ -4,13 +4,15 @@ import { formatMoney } from '../../../shared/lib/format';
 interface AssetItemProps {
     stock: Stock;
     quote?: MoexStock;
-    onRemove: (id: number) => void;
+    onSelect: () => void;
+    onRequestRemove: () => void;
 }
 
 function AssetItem({
                        stock,
                        quote,
-                       onRemove,
+                       onSelect,
+                       onRequestRemove,
                    }: AssetItemProps) {
     const unitPrice =
         quote?.currentPrice ?? stock.currentPrice ?? stock.purchasePrice;
@@ -38,7 +40,22 @@ function AssetItem({
                 : 'asset-item__change';
 
     return (
-        <div className="asset-item">
+        <div
+            className="asset-item"
+            role="button"
+            tabIndex={0}
+            onClick={onSelect}
+            onKeyDown={(event) => {
+                if (event.target !== event.currentTarget) {
+                    return;
+                }
+
+                if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    onSelect();
+                }
+            }}
+        >
             <div className="asset-item__info">
                 <div className="asset-item__ticker">
                     {stock.ticker}
@@ -76,14 +93,9 @@ function AssetItem({
             <button
                 type="button"
                 className="asset-item__remove"
-                onClick={() => {
-                    if (
-                        window.confirm(
-                            `Удалить ${stock.ticker} из портфеля?`,
-                        )
-                    ) {
-                        onRemove(stock.id);
-                    }
+                onClick={(event) => {
+                    event.stopPropagation();
+                    onRequestRemove();
                 }}
             >
                 Удалить

@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 
 import { useMultipleStocks } from '../../../entities/stock/model/moexQueries';
 import {
@@ -11,7 +11,9 @@ import {
 } from '../../../shared/lib/format';
 
 import AddAssetForm from './AddAssetForm';
+import AssetDetailsModal from './AssetDetailsModal';
 import AssetItem from './AssetItem';
+import ConfirmDeleteModal from './ConfirmDeleteModal';
 
 function AssetList() {
     const {
@@ -21,6 +23,16 @@ function AssetList() {
     } = useStocksQuery();
 
     const deleteStockMutation = useDeleteStockMutation();
+
+    const [selectedStockId, setSelectedStockId] = useState<number | null>(
+        null,
+    );
+
+    const [pendingDelete, setPendingDelete] = useState<{
+        id: number;
+        ticker: string;
+        name: string;
+    } | null>(null);
 
     const tickers = useMemo(
         () => Array.from(new Set(stocks.map((stock) => stock.ticker))),
@@ -76,8 +88,24 @@ function AssetList() {
         return new Date(Math.max(...timestamps));
     }, [quotes]);
 
-    const removeStock = (id: number) => {
-        deleteStockMutation.mutate(id);
+    const selectedRow =
+        rows.find(({ stock }) => stock.id === selectedStockId) ?? null;
+
+    const confirmDelete = () => {
+        if (!pendingDelete) {
+            return;
+        }
+
+        deleteStockMutation.mutate(pendingDelete.id, {
+            onSuccess: () => {
+                setPendingDelete(null);
+            },
+        });
+    };
+
+    const cancelDelete = () => {
+        deleteStockMutation.reset();
+        setPendingDelete(null);
     };
 
     if (error) {
@@ -116,23 +144,36 @@ function AssetList() {
                 </div>
 
                 <div className="asset-list__summary">
-                    <div className="asset-list__summary-label">
-                        Стоимость портфеля
+                    <div className="asset-list__summary-item">
+                        <div className="asset-list__summary-label">
+                            Стоимость портфеля
+                        </div>
+
+                        <div className="asset-list__summary-value">
+                            {formatMoney(totals.value)}
+                        </div>
                     </div>
 
-                    <div className="asset-list__summary-value">
-                        {formatMoney(totals.value)}
+                    <div className="asset-list__summary-item">
+                        <div className="asset-list__summary-label">
+                            Вложено
+                        </div>
+
+                        <div className="asset-list__summary-value">
+                            {formatMoney(totals.invested)}
+                        </div>
                     </div>
 
-                    <div className="asset-list__summary-label">
-                        Вложено: {formatMoney(totals.invested)}
-                    </div>
+                    <div className="asset-list__summary-item">
+                        <div className="asset-list__summary-label">
+                            MOEX
+                        </div>
 
-                    <div className="asset-list__updated">
-                        MOEX:{' '}
-                        {lastUpdated
-                            ? lastUpdated.toLocaleTimeString('ru-RU')
-                            : '—'}
+                        <div className="asset-list__summary-value asset-list__summary-value--time">
+                            {lastUpdated
+                                ? lastUpdated.toLocaleTimeString('ru-RU')
+                                : '—'}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -167,10 +208,38 @@ function AssetList() {
                             key={stock.id}
                             stock={stock}
                             quote={quote}
-                            onRemove={removeStock}
+                            onSelect={() => setSelectedStockId(stock.id)}
+                            onRequestRemove={() => {
+                                deleteStockMutation.reset();
+                                setPendingDelete({
+                                    id: stock.id,
+                                    ticker: stock.ticker,
+                                    name: stock.name,
+                                });
+                            }}
                         />
                     ))}
                 </div>
+            )}
+
+            {selectedRow && (
+                <AssetDetailsModal
+                    stock={selectedRow.stock}
+                    quote={selectedRow.quote}
+                    portfolioValue={totals.value}
+                    onClose={() => setSelectedStockId(null)}
+                />
+            )}
+
+            {pendingDelete && (
+                <ConfirmDeleteModal
+                    ticker={pendingDelete.ticker}
+                    name={pendingDelete.name}
+                    isDeleting={deleteStockMutation.isPending}
+                    isError={deleteStockMutation.isError}
+                    onConfirm={confirmDelete}
+                    onCancel={cancelDelete}
+                />
             )}
         </div>
     );

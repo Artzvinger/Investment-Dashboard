@@ -1,6 +1,7 @@
 import { Router } from 'express';
 
 import { prisma } from '../../lib/prisma';
+import { toStockDto } from '../dto/stock.dto';
 
 const router = Router();
 
@@ -12,7 +13,7 @@ router.get('/', async (_req, res, next) => {
             },
         });
 
-        res.json(stocks);
+        res.json(stocks.map(toStockDto));
     } catch (error) {
         next(error);
     }
@@ -36,7 +37,7 @@ router.get('/:id', async (req, res, next) => {
             return;
         }
 
-        res.json(stock);
+        res.json(toStockDto(stock));
     } catch (error) {
         next(error);
     }
@@ -81,31 +82,75 @@ router.post('/', async (req, res, next) => {
             return;
         }
 
+        const normalizedTicker = ticker.trim().toUpperCase();
+
+        const marketData = {
+            ...(typeof currentPrice === 'number' &&
+            Number.isFinite(currentPrice) &&
+            currentPrice > 0
+                ? { currentPrice }
+                : {}),
+            ...(typeof changePercent === 'number' &&
+            Number.isFinite(changePercent)
+                ? { changePercent }
+                : {}),
+            ...(typeof lastUpdate === 'string' &&
+            !Number.isNaN(Date.parse(lastUpdate))
+                ? { lastUpdate: new Date(lastUpdate) }
+                : {}),
+        };
+
+        const existingStock = await prisma.stock.findFirst({
+            where: {
+                ticker: normalizedTicker,
+                userId,
+            },
+        });
+
+        if (existingStock) {
+            const totalQuantity =
+                existingStock.quantity + quantity;
+
+            const weightedPurchasePrice =
+                (Number(existingStock.purchasePrice) *
+                    existingStock.quantity +
+                    purchasePrice * quantity) /
+                totalQuantity;
+
+            const mergedStock = await prisma.stock.update({
+                where: { id: existingStock.id },
+                data: {
+                    name: name.trim(),
+                    quantity: totalQuantity,
+                    purchasePrice: weightedPurchasePrice,
+                    ...marketData,
+                },
+            });
+
+            res.json(toStockDto(mergedStock));
+            return;
+        }
+
         const stock = await prisma.stock.create({
             data: {
-                ticker: ticker.trim().toUpperCase(),
+                ticker: normalizedTicker,
                 name: name.trim(),
                 quantity,
                 purchasePrice,
                 userId,
-                ...(typeof currentPrice === 'number' &&
-                Number.isFinite(currentPrice) &&
-                currentPrice > 0
-                    ? { currentPrice }
-                    : {}),
-                ...(typeof changePercent === 'number' &&
-                Number.isFinite(changePercent)
-                    ? { changePercent }
-                    : {}),
-                ...(typeof lastUpdate === 'string' &&
-                !Number.isNaN(Date.parse(lastUpdate))
-                    ? { lastUpdate: new Date(lastUpdate) }
-                    : {}),
+                ...marketData,
             },
         });
 
-        res.status(201).json(stock);
+        res.status(201).json(toStockDto(stock));
     } catch (error) {
+        if ((error as { code?: string }).code === 'P2002') {
+            res.status(409).json({
+                message: 'Такая акция уже есть в портфеле',
+            });
+            return;
+        }
+
         next(error);
     }
 });
@@ -185,7 +230,7 @@ router.patch('/:id', async (req, res, next) => {
             },
         });
 
-        res.json(stock);
+        res.json(toStockDto(stock));
     } catch (error) {
         next(error);
     }

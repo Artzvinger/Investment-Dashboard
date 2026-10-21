@@ -9,10 +9,10 @@
 
 .asset-list__header {
     display: flex;
-    align-items: flex-end;
+    align-items: flex-start;
     justify-content: space-between;
     flex-wrap: wrap;
-    gap: 24px;
+    gap: 20px 32px;
     padding: 22px 24px;
     background: linear-gradient(145deg, #1d2520, #191f1b);
     border: 1px solid var(--border);
@@ -20,16 +20,25 @@
     box-shadow: var(--shadow-card);
 }
 
-.asset-list__profit-block,
-.asset-list__summary {
+.asset-list__profit-block {
     display: flex;
     flex-direction: column;
     gap: 6px;
+    min-width: 0;
 }
 
 .asset-list__summary {
-    align-items: flex-end;
-    text-align: right;
+    display: flex;
+    align-items: flex-start;
+    gap: 28px;
+    flex-wrap: wrap;
+}
+
+.asset-list__summary-item {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
 }
 
 .asset-list__summary-label {
@@ -49,15 +58,17 @@
     font-variant-numeric: tabular-nums;
 }
 
-.asset-list__updated {
-    color: var(--text-muted);
-    font-size: 11px;
-    font-variant-numeric: tabular-nums;
+.asset-list__summary-value--time {
+    color: var(--text-secondary);
+    font-size: 14px;
+    font-weight: 600;
+    letter-spacing: 0;
 }
 
 .asset-list__profit {
     display: flex;
     align-items: baseline;
+    flex-wrap: wrap;
     gap: 10px;
     font-variant-numeric: tabular-nums;
 }
@@ -119,6 +130,7 @@
 
 .asset-item {
     border-bottom: 1px solid #2a332d;
+    cursor: pointer;
     transition: background var(--transition);
 }
 
@@ -128,6 +140,11 @@
 
 .asset-item:hover {
     background: var(--bg-hover);
+}
+
+.asset-item:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: -2px;
 }
 
 .asset-item__info {
@@ -223,12 +240,13 @@
 
 @media (max-width: 760px) {
     .asset-list__header {
-        align-items: flex-start;
         flex-direction: column;
+        align-items: flex-start;
     }
 
     .asset-list__summary {
-        align-items: flex-start;
-        text-align: left;
+        width: 100%;
+        justify-content: space-between;
+        gap: 18px;
     }
 }

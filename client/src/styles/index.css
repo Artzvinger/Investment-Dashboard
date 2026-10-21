@@ -3,4 +3,6 @@
 @import './layout.css';
 @import './components.css';
 @import './asset-list.css';
+@import './asset-details.css';
+@import './confirm-delete.css';
 @import './responsive.css';

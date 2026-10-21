@@ -1,0 +1,92 @@
+/* Asset details modal */
+
+.asset-details {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.asset-details__profit {
+    padding: 16px 18px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    background: var(--bg-input);
+}
+
+.asset-details__profit--positive {
+    border-color: #3b5636;
+    background: var(--success-bg);
+}
+
+.asset-details__profit--negative {
+    border-color: #593632;
+    background: var(--danger-bg);
+}
+
+.asset-details__profit-label {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.asset-details__profit-value {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 6px;
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: -0.8px;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-details__profit--positive .asset-details__profit-value {
+    color: var(--positive);
+}
+
+.asset-details__profit--negative .asset-details__profit-value {
+    color: var(--negative);
+}
+
+.asset-details__profit-percent {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 7%);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.asset-details__list {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.asset-details__row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid #2a332d;
+}
+
+.asset-details__row:last-child {
+    border-bottom: none;
+}
+
+.asset-details__row dt {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.asset-details__row dd {
+    margin: 0;
+    color: var(--text-primary);
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+    text-align: right;
+}

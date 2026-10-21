@@ -30,16 +30,16 @@ export type TransactionAvgAggregateOutputType = {
   id: number | null
   userId: number | null
   quantity: number | null
-  price: number | null
-  total: number | null
+  price: runtime.Decimal | null
+  total: runtime.Decimal | null
 }
 
 export type TransactionSumAggregateOutputType = {
   id: number | null
   userId: number | null
   quantity: number | null
-  price: number | null
-  total: number | null
+  price: runtime.Decimal | null
+  total: runtime.Decimal | null
 }
 
 export type TransactionMinAggregateOutputType = {
@@ -48,8 +48,8 @@ export type TransactionMinAggregateOutputType = {
   ticker: string | null
   type: string | null
   quantity: number | null
-  price: number | null
-  total: number | null
+  price: runtime.Decimal | null
+  total: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -59,8 +59,8 @@ export type TransactionMaxAggregateOutputType = {
   ticker: string | null
   type: string | null
   quantity: number | null
-  price: number | null
-  total: number | null
+  price: runtime.Decimal | null
+  total: runtime.Decimal | null
   createdAt: Date | null
 }
 
@@ -219,8 +219,8 @@ export type TransactionGroupByOutputType = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal
+  total: runtime.Decimal
   createdAt: Date
   _count: TransactionCountAggregateOutputType | null
   _avg: TransactionAvgAggregateOutputType | null
@@ -253,8 +253,8 @@ export type TransactionWhereInput = {
   ticker?: Prisma.StringFilter<"Transaction"> | string
   type?: Prisma.StringFilter<"Transaction"> | string
   quantity?: Prisma.IntFilter<"Transaction"> | number
-  price?: Prisma.FloatFilter<"Transaction"> | number
-  total?: Prisma.FloatFilter<"Transaction"> | number
+  price?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }
@@ -280,8 +280,8 @@ export type TransactionWhereUniqueInput = Prisma.AtLeast<{
   ticker?: Prisma.StringFilter<"Transaction"> | string
   type?: Prisma.StringFilter<"Transaction"> | string
   quantity?: Prisma.IntFilter<"Transaction"> | number
-  price?: Prisma.FloatFilter<"Transaction"> | number
-  total?: Prisma.FloatFilter<"Transaction"> | number
+  price?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
 }, "id">
@@ -311,8 +311,8 @@ export type TransactionScalarWhereWithAggregatesInput = {
   ticker?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   type?: Prisma.StringWithAggregatesFilter<"Transaction"> | string
   quantity?: Prisma.IntWithAggregatesFilter<"Transaction"> | number
-  price?: Prisma.FloatWithAggregatesFilter<"Transaction"> | number
-  total?: Prisma.FloatWithAggregatesFilter<"Transaction"> | number
+  price?: Prisma.DecimalWithAggregatesFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalWithAggregatesFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Transaction"> | Date | string
 }
 
@@ -320,8 +320,8 @@ export type TransactionCreateInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutTransactionsInput
 }
@@ -332,8 +332,8 @@ export type TransactionUncheckedCreateInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -341,8 +341,8 @@ export type TransactionUpdateInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutTransactionsNestedInput
 }
@@ -353,8 +353,8 @@ export type TransactionUncheckedUpdateInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -364,8 +364,8 @@ export type TransactionCreateManyInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -373,8 +373,8 @@ export type TransactionUpdateManyMutationInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -384,8 +384,8 @@ export type TransactionUncheckedUpdateManyInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -494,8 +494,8 @@ export type TransactionCreateWithoutUserInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -504,8 +504,8 @@ export type TransactionUncheckedCreateWithoutUserInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -544,8 +544,8 @@ export type TransactionScalarWhereInput = {
   ticker?: Prisma.StringFilter<"Transaction"> | string
   type?: Prisma.StringFilter<"Transaction"> | string
   quantity?: Prisma.IntFilter<"Transaction"> | number
-  price?: Prisma.FloatFilter<"Transaction"> | number
-  total?: Prisma.FloatFilter<"Transaction"> | number
+  price?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFilter<"Transaction"> | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFilter<"Transaction"> | Date | string
 }
 
@@ -554,8 +554,8 @@ export type TransactionCreateManyUserInput = {
   ticker: string
   type: string
   quantity: number
-  price: number
-  total: number
+  price: runtime.Decimal | runtime.DecimalJsLike | number | string
+  total: runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Date | string
 }
 
@@ -563,8 +563,8 @@ export type TransactionUpdateWithoutUserInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -573,8 +573,8 @@ export type TransactionUncheckedUpdateWithoutUserInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -583,8 +583,8 @@ export type TransactionUncheckedUpdateManyWithoutUserInput = {
   ticker?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   quantity?: Prisma.IntFieldUpdateOperationsInput | number
-  price?: Prisma.FloatFieldUpdateOperationsInput | number
-  total?: Prisma.FloatFieldUpdateOperationsInput | number
+  price?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
+  total?: Prisma.DecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
@@ -659,8 +659,8 @@ export type $TransactionPayload<ExtArgs extends runtime.Types.Extensions.Interna
     ticker: string
     type: string
     quantity: number
-    price: number
-    total: number
+    price: runtime.Decimal
+    total: runtime.Decimal
     createdAt: Date
   }, ExtArgs["result"]["transaction"]>
   composites: {}
@@ -1091,8 +1091,8 @@ export interface TransactionFieldRefs {
   readonly ticker: Prisma.FieldRef<"Transaction", 'String'>
   readonly type: Prisma.FieldRef<"Transaction", 'String'>
   readonly quantity: Prisma.FieldRef<"Transaction", 'Int'>
-  readonly price: Prisma.FieldRef<"Transaction", 'Float'>
-  readonly total: Prisma.FieldRef<"Transaction", 'Float'>
+  readonly price: Prisma.FieldRef<"Transaction", 'Decimal'>
+  readonly total: Prisma.FieldRef<"Transaction", 'Decimal'>
   readonly createdAt: Prisma.FieldRef<"Transaction", 'DateTime'>
 }
     

@@ -392,6 +392,14 @@ export type MacroCacheSumOrderByAggregateInput = {
   inflation?: Prisma.SortOrder
 }
 
+export type FloatFieldUpdateOperationsInput = {
+  set?: number
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
 
 
 export type MacroCacheSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
