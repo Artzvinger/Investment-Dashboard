@@ -4,41 +4,19 @@ import {
     useForm,
 } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 
 import { useStock } from '../../../entities/stock/model/moexQueries';
 import { useCreateStockMutation } from '../../../entities/stock/model/stockQueries';
-import Modal from '../../../shared/ui/Modal/Modal';
+import { useDebouncedValue } from '../../../shared/hooks/useDebouncedValue';
+import { parseDecimal } from '../../../shared/lib/number';
 import { getCurrentUserId } from '../../../shared/session';
+import Modal from '../../../shared/ui/Modal/Modal';
 
-const stockSchema = z.object({
-    ticker: z
-        .string()
-        .min(1, 'Тикер обязателен')
-        .max(10, 'Тикер слишком длинный')
-        .regex(
-            /^[A-Za-z]+$/,
-            'Тикер должен содержать только буквы',
-        ),
-
-    quantity: z
-        .number()
-        .min(1, 'Количество должно быть больше 0')
-        .max(1_000_000, 'Слишком много акций'),
-
-    purchasePrice: z
-        .number()
-        .min(0.01, 'Цена должна быть больше 0')
-        .max(10_000_000, 'Слишком высокая цена'),
-});
-
-type StockFormData = z.infer<typeof stockSchema>;
-
-const defaultValues: StockFormData = {
-    ticker: '',
-    quantity: 1,
-    purchasePrice: 0,
-};
+import {
+    stockFormDefaults,
+    stockFormSchema,
+    type StockFormValues,
+} from '../model/stockFormSchema';
 
 function AddAssetForm() {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -48,9 +26,9 @@ function AddAssetForm() {
         handleSubmit,
         formState: { errors },
         reset,
-    } = useForm<StockFormData>({
-        resolver: zodResolver(stockSchema),
-        defaultValues,
+    } = useForm<StockFormValues>({
+        resolver: zodResolver(stockFormSchema),
+        defaultValues: stockFormDefaults,
     });
 
     const createStockMutation = useCreateStockMutation();
@@ -71,11 +49,14 @@ function AddAssetForm() {
     });
 
     const ticker = tickerField.field.value.trim().toUpperCase();
+    const debouncedTicker = useDebouncedValue(ticker, 400);
 
-    const marketQuery = useStock(ticker);
+    const marketQuery = useStock(debouncedTicker);
     const marketStock = marketQuery.data;
 
-    const onSubmit = (data: StockFormData) => {
+    const isDebouncing = ticker !== debouncedTicker;
+
+    const onSubmit = (data: StockFormValues) => {
         if (!marketStock || marketStock.ticker !== ticker) {
             return;
         }
@@ -84,9 +65,12 @@ function AddAssetForm() {
             {
                 ticker: marketStock.ticker,
                 name: marketStock.name,
-                quantity: data.quantity,
-                purchasePrice: data.purchasePrice,
+                quantity: parseDecimal(data.quantity),
+                purchasePrice: parseDecimal(data.purchasePrice),
                 userId: getCurrentUserId(),
+                currentPrice: marketStock.currentPrice,
+                changePercent: marketStock.changePercent,
+                lastUpdate: marketStock.lastUpdate,
             },
             {
                 onSuccess: () => {
@@ -104,10 +88,11 @@ function AddAssetForm() {
     };
 
     const isMarketDataLoading =
-        ticker.length > 0 && marketQuery.isFetching;
+        ticker.length > 0 && (isDebouncing || marketQuery.isFetching);
 
     const hasMarketDataError =
         ticker.length > 0 &&
+        !isDebouncing &&
         marketQuery.isError &&
         !marketQuery.isFetching;
 
@@ -139,6 +124,7 @@ function AddAssetForm() {
                         <input
                             id="ticker"
                             type="text"
+                            autoComplete="off"
                             {...tickerField.field}
                             placeholder="Например: SBER, GAZP, ROSN"
                             className={
@@ -211,13 +197,10 @@ function AddAssetForm() {
 
                         <input
                             id="quantity"
-                            type="number"
+                            type="text"
+                            inputMode="numeric"
+                            autoComplete="off"
                             {...quantityField.field}
-                            onChange={(event) => {
-                                quantityField.field.onChange(
-                                    event.target.valueAsNumber,
-                                );
-                            }}
                             placeholder="Сколько акций купили?"
                             className={
                                 errors.quantity
@@ -240,15 +223,11 @@ function AddAssetForm() {
 
                         <input
                             id="purchasePrice"
-                            type="number"
-                            step="0.01"
+                            type="text"
+                            inputMode="decimal"
+                            autoComplete="off"
                             {...purchasePriceField.field}
-                            onChange={(event) => {
-                                purchasePriceField.field.onChange(
-                                    event.target.valueAsNumber,
-                                );
-                            }}
-                            placeholder="Цена за 1 акцию"
+                            placeholder="Например: 293.5 или 293,5"
                             className={
                                 errors.purchasePrice
                                     ? 'add-asset-form__input add-asset-form__input--error'
@@ -261,6 +240,10 @@ function AddAssetForm() {
                                 {errors.purchasePrice.message}
                             </div>
                         )}
+
+                        <div className="add-asset-form__hint">
+                            Дробные числа можно вводить через точку или запятую.
+                        </div>
 
                         {marketStock && marketStock.ticker === ticker && (
                             <div className="add-asset-form__hint">
@@ -290,6 +273,7 @@ function AddAssetForm() {
                             className="add-asset-form__submit"
                             disabled={
                                 createStockMutation.isPending ||
+                                isDebouncing ||
                                 !marketStock ||
                                 marketStock.ticker !== ticker ||
                                 marketQuery.isFetching

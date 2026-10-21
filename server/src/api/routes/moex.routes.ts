@@ -1,98 +1,95 @@
-
 import { Router } from 'express';
+
+import {
+    fetchMoexQuote,
+    isValidTicker,
+    type MoexQuote,
+} from '../services/moex.service';
 
 const router = Router();
 
-interface IssBlock {
-    columns: string[];
-    data: (string | number | null)[][];
-}
-
-interface IssResponse {
-    securities?: IssBlock;
-    marketdata?: IssBlock;
-}
-
-function getRow(
-    block: IssBlock | undefined,
-): Record<string, string | number | null> | null {
-    if (!block?.data.length) {
-        return null;
-    }
-
-    return Object.fromEntries(
-        block.columns.map((column, index) => [
-            column,
-            block.data[0][index] ?? null,
-        ]),
-    );
-}
+const MAX_BATCH_TICKERS = 50;
 
 router.get('/stocks/:ticker', async (req, res, next) => {
     try {
         const ticker = req.params.ticker.toUpperCase();
 
-        if (!/^[A-Z0-9.-]{1,20}$/.test(ticker)) {
+        if (!isValidTicker(ticker)) {
             res.status(400).json({
                 message: 'Некорректный тикер акции',
             });
             return;
         }
 
-        const url = new URL(
-            `https://iss.moex.com/iss/engines/stock/markets/shares/boards/TQBR/securities/${encodeURIComponent(ticker)}.json`,
-        );
+        const quote = await fetchMoexQuote(ticker);
 
-        url.searchParams.set('iss.meta', 'off');
-        url.searchParams.set('iss.only', 'securities,marketdata');
-
-        const response = await fetch(url, {
-            signal: AbortSignal.timeout(8000),
-        });
-
-        if (!response.ok) {
-            res.status(502).json({
-                message: 'Не удалось получить данные Московской биржи',
-            });
-            return;
-        }
-
-        const result = (await response.json()) as IssResponse;
-
-        const security = getRow(result.securities);
-        const market = getRow(result.marketdata);
-
-        const currentPrice = market?.LAST;
-
-        if (
-            !security ||
-            !market ||
-            typeof currentPrice !== 'number' ||
-            !Number.isFinite(currentPrice) ||
-            currentPrice <= 0
-        ) {
+        if (!quote) {
             res.status(404).json({
                 message: `Акция ${ticker} не найдена или цена недоступна`,
             });
             return;
         }
 
-        const change = market.LASTCHANGEPRCNT;
+        res.json(quote);
+    } catch (error) {
+        next(error);
+    }
+});
 
-        res.json({
-            ticker,
-            name:
-                security.SHORTNAME ??
-                security.SECNAME ??
-                ticker,
-            currentPrice,
-            changePercent:
-                typeof change === 'number' &&
-                Number.isFinite(change)
-                    ? change
-                    : null,
-            lastUpdate: new Date().toISOString(),
-        });
+router.get('/quotes', async (req, res, next) => {
+    try {
+        const rawTickers =
+            typeof req.query.tickers === 'string'
+                ? req.query.tickers
+                : '';
+
+        const tickers = Array.from(
+            new Set(
+                rawTickers
+                    .split(',')
+                    .map((ticker) => ticker.trim().toUpperCase())
+                    .filter((ticker) => ticker.length > 0),
+            ),
+        );
+
+        if (tickers.length === 0) {
+            res.json([]);
+            return;
+        }
+
+        if (tickers.length > MAX_BATCH_TICKERS) {
+            res.status(400).json({
+                message: `Слишком много тикеров (максимум ${MAX_BATCH_TICKERS})`,
+            });
+            return;
+        }
+
+        const invalidTicker = tickers.find(
+            (ticker) => !isValidTicker(ticker),
+        );
+
+        if (invalidTicker) {
+            res.status(400).json({
+                message: `Некорректный тикер: ${invalidTicker}`,
+            });
+            return;
+        }
+
+        const results = await Promise.allSettled(
+            tickers.map((ticker) => fetchMoexQuote(ticker)),
+        );
+
+        const quotes = results
+            .filter(
+                (
+                    result,
+                ): result is PromiseFulfilledResult<MoexQuote | null> =>
+                    result.status === 'fulfilled',
+            )
+            .map((result) => result.value)
+            .filter((quote): quote is MoexQuote => quote !== null);
+
+        res.json(quotes);
     } catch (error) {
         next(error);
     }

@@ -31,9 +31,10 @@ export const stockApi = {
             quantity: Number(input.quantity),
             purchasePrice: Number(input.purchasePrice),
             userId: input.userId,
+            currentPrice: input.currentPrice ?? undefined,
+            changePercent: input.changePercent ?? undefined,
+            lastUpdate: input.lastUpdate ?? undefined,
         };
-
-        console.log('POST /stocks payload:', payload);
 
         const { data } = await httpClient.post<Stock>(
             '/stocks',
@@ -70,8 +71,19 @@ export const stockApi = {
     async getMultipleMarketData(
         tickers: string[],
     ): Promise<MoexStock[]> {
-        return Promise.all(
-            tickers.map((ticker) => this.getMarketData(ticker)),
+        if (tickers.length === 0) {
+            return [];
+        }
+
+        const { data } = await httpClient.get<MoexStock[]>(
+            '/moex/quotes',
+            {
+                params: {
+                    tickers: tickers.join(','),
+                },
+            },
         );
+
+        return data;
     },
 };

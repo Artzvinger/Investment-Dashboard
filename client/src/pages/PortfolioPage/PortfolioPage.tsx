@@ -1,14 +1,16 @@
+import { useQueryClient } from '@tanstack/react-query';
 
-import { useStocksQuery } from '../../entities/stock/model/stockQueries';
-import AddAssetForm from '../../widgets/AssetList/ui/AddAssetForm';
+import { STOCKS_QUERY_KEY } from '../../entities/stock/model/stockQueries';
+import AssetList from '../../widgets/AssetList/ui/AssetList';
 
 function PortfolioPage() {
-    const {
-        data: stocks,
-        isLoading,
-        isError,
-        refetch,
-    } = useStocksQuery();
+    const queryClient = useQueryClient();
+
+    const handleRefresh = () => {
+        queryClient.invalidateQueries({
+            queryKey: STOCKS_QUERY_KEY.all,
+        });
+    };
 
     return (
         <main className="page">
@@ -21,97 +23,16 @@ function PortfolioPage() {
                 </div>
 
                 <div className="page-header__actions">
-                    <AddAssetForm />
-
                     <button
                         type="button"
-                        onClick={() => refetch()}
+                        onClick={handleRefresh}
                     >
                         Обновить
                     </button>
                 </div>
             </div>
 
-            {isLoading && (
-                <div className="card">
-                    Загрузка акций...
-                </div>
-            )}
-
-            {isError && (
-                <div className="error-message">
-                    <p>Не удалось загрузить акции. Проверь backend.</p>
-
-                    <button
-                        type="button"
-                        onClick={() => refetch()}
-                    >
-                        Повторить
-                    </button>
-                </div>
-            )}
-
-            {!isLoading && !isError && stocks?.length === 0 && (
-                <div className="empty-state card">
-                    <h3>Пока нет акций</h3>
-                    <p>
-                        Добавь первую акцию, чтобы она появилась в портфеле.
-                    </p>
-                </div>
-            )}
-
-            {!isLoading && !isError && stocks && stocks.length > 0 && (
-                <div className="table-container">
-                    <table>
-                        <thead>
-                        <tr>
-                            <th>Тикер</th>
-                            <th>Название</th>
-                            <th>Количество</th>
-                            <th>Цена покупки</th>
-                            <th>Текущая цена</th>
-                            <th>Изменение</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        {stocks.map((stock) => (
-                            <tr key={stock.id}>
-                                <td>{stock.ticker}</td>
-                                <td>{stock.name}</td>
-                                <td>{stock.quantity}</td>
-
-                                <td>
-                                    {stock.purchasePrice.toLocaleString('ru-RU')} ₽
-                                </td>
-
-                                <td>
-                                    {stock.currentPrice == null
-                                        ? '—'
-                                        : `${stock.currentPrice.toLocaleString('ru-RU')} ₽`}
-                                </td>
-
-                                <td
-                                    className={
-                                        stock.changePercent == null
-                                            ? ''
-                                            : stock.changePercent > 0
-                                                ? 'text-positive'
-                                                : stock.changePercent < 0
-                                                    ? 'text-negative'
-                                                    : ''
-                                    }
-                                >
-                                    {stock.changePercent == null
-                                        ? '—'
-                                        : `${stock.changePercent > 0 ? '+' : ''}${stock.changePercent.toFixed(2)}%`}
-                                </td>
-                            </tr>
-                        ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
+            <AssetList />
         </main>
     );
 }

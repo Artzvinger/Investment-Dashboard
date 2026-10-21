@@ -7,7 +7,7 @@ function Sidebar() {
 
             <nav>
                 <NavLink
-                    to="/"
+                    to="/portfolio"
                     end
                 >
                     📈 Портфель

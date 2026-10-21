@@ -1,0 +1,234 @@
+/* Portfolio asset list */
+
+.asset-list {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-width: 0;
+}
+
+.asset-list__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 24px;
+    padding: 22px 24px;
+    background: linear-gradient(145deg, #1d2520, #191f1b);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.asset-list__profit-block,
+.asset-list__summary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.asset-list__summary {
+    align-items: flex-end;
+    text-align: right;
+}
+
+.asset-list__summary-label {
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.asset-list__summary-value {
+    color: var(--text-primary);
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -0.6px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-list__updated {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-list__profit {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-list__profit--positive {
+    color: var(--positive);
+}
+
+.asset-list__profit--negative {
+    color: var(--negative);
+}
+
+.asset-list__profit-value {
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: -0.9px;
+    line-height: 1.05;
+}
+
+.asset-list__profit-percent {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 7%);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.asset-list__table {
+    overflow-x: auto;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.asset-list__table-header,
+.asset-item {
+    display: grid;
+    grid-template-columns: minmax(170px, 1.7fr) 76px 120px 120px 140px 92px;
+    align-items: center;
+    gap: 14px;
+    min-width: 760px;
+    padding: 13px 20px;
+}
+
+.asset-list__table-header {
+    background: #202722;
+    border-bottom: 1px solid #2a332d;
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+}
+
+.asset-list__table-header > div:last-child {
+    text-align: right;
+}
+
+.asset-item {
+    border-bottom: 1px solid #2a332d;
+    transition: background var(--transition);
+}
+
+.asset-item:last-child {
+    border-bottom: none;
+}
+
+.asset-item:hover {
+    background: var(--bg-hover);
+}
+
+.asset-item__info {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+}
+
+.asset-item__ticker {
+    color: var(--text-primary);
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.2px;
+}
+
+.asset-item__name {
+    overflow: hidden;
+    color: var(--text-secondary);
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.asset-item__quantity,
+.asset-item__price {
+    color: #dce5de;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-item__change {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 13px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.asset-item__change--positive {
+    color: var(--positive);
+}
+
+.asset-item__change--negative {
+    color: var(--negative);
+}
+
+.asset-item__change-value {
+    font-weight: 700;
+}
+
+.asset-item__change-money {
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.asset-item__remove {
+    justify-self: end;
+    min-height: 34px;
+    padding: 6px 12px;
+    color: #ffaaaa;
+    background: var(--danger-bg);
+    border: 1px solid #593632;
+    border-radius: var(--radius-sm);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.asset-item__remove:hover:not(:disabled) {
+    background: #4a2d2b;
+}
+
+.asset-list__loading,
+.asset-list__empty {
+    padding: 22px;
+    color: var(--text-secondary);
+    text-align: center;
+}
+
+.asset-list__error {
+    padding: 14px 16px;
+    color: #ffaaaa;
+    background: var(--danger-bg);
+    border: 1px solid #593632;
+    border-radius: var(--radius-md);
+}
+
+.asset-list > .add-asset-form__open-button {
+    align-self: flex-start;
+}
+
+@media (max-width: 760px) {
+    .asset-list__header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .asset-list__summary {
+        align-items: flex-start;
+        text-align: left;
+    }
+}

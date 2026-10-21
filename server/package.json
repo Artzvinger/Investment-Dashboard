@@ -9,7 +9,9 @@
     "start": "node dist/server.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "db:generate": "prisma generate",
-    "db:migrate": "prisma migrate dev"
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:clear-stocks": "tsx src/scripts/clear-stocks.ts"
   },
   "keywords": [],
   "author": "",

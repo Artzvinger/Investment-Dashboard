@@ -1,6 +1,5 @@
 
 import { useEffect, type ReactNode, type MouseEvent } from 'react';
-import './Modal.css';
 
 interface ModalProps {
     isOpen: boolean;

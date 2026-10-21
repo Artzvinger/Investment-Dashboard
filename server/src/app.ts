@@ -22,7 +22,6 @@ export function createApp(): Express {
 
     app.use('/api/stocks', stocksRoutes);
     app.use('/api/moex', moexRoutes);
-    app.use('/api/stocks', stocksRoutes);
 
     app.use(errorMiddleware);
 

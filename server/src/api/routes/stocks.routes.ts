@@ -44,7 +44,16 @@ router.get('/:id', async (req, res, next) => {
 
 router.post('/', async (req, res, next) => {
     try {
-        const { ticker, name, quantity, purchasePrice, userId } = req.body;
+        const {
+            ticker,
+            name,
+            quantity,
+            purchasePrice,
+            userId,
+            currentPrice,
+            changePercent,
+            lastUpdate,
+        } = req.body;
 
         if (
             typeof ticker !== 'string' ||
@@ -79,6 +88,19 @@ router.post('/', async (req, res, next) => {
                 quantity,
                 purchasePrice,
                 userId,
+                ...(typeof currentPrice === 'number' &&
+                Number.isFinite(currentPrice) &&
+                currentPrice > 0
+                    ? { currentPrice }
+                    : {}),
+                ...(typeof changePercent === 'number' &&
+                Number.isFinite(changePercent)
+                    ? { changePercent }
+                    : {}),
+                ...(typeof lastUpdate === 'string' &&
+                !Number.isNaN(Date.parse(lastUpdate))
+                    ? { lastUpdate: new Date(lastUpdate) }
+                    : {}),
             },
         });
 
@@ -106,7 +128,15 @@ router.patch('/:id', async (req, res, next) => {
             return;
         }
 
-        const { ticker, name, quantity, purchasePrice } = req.body;
+        const {
+            ticker,
+            name,
+            quantity,
+            purchasePrice,
+            currentPrice,
+            changePercent,
+            lastUpdate,
+        } = req.body;
 
         if (
             (ticker !== undefined &&
@@ -118,7 +148,20 @@ router.patch('/:id', async (req, res, next) => {
             (purchasePrice !== undefined &&
                 (typeof purchasePrice !== 'number' ||
                     !Number.isFinite(purchasePrice) ||
-                    purchasePrice <= 0))
+                    purchasePrice <= 0)) ||
+            (currentPrice !== undefined &&
+                currentPrice !== null &&
+                (typeof currentPrice !== 'number' ||
+                    !Number.isFinite(currentPrice) ||
+                    currentPrice <= 0)) ||
+            (changePercent !== undefined &&
+                changePercent !== null &&
+                (typeof changePercent !== 'number' ||
+                    !Number.isFinite(changePercent))) ||
+            (lastUpdate !== undefined &&
+                lastUpdate !== null &&
+                (typeof lastUpdate !== 'string' ||
+                    Number.isNaN(Date.parse(lastUpdate))))
         ) {
             res.status(400).json({ message: 'Некорректные данные акции' });
             return;
@@ -133,6 +176,12 @@ router.patch('/:id', async (req, res, next) => {
                 ...(name !== undefined && { name: name.trim() }),
                 ...(quantity !== undefined && { quantity }),
                 ...(purchasePrice !== undefined && { purchasePrice }),
+                ...(currentPrice !== undefined && { currentPrice }),
+                ...(changePercent !== undefined && { changePercent }),
+                ...(lastUpdate !== undefined && {
+                    lastUpdate:
+                        lastUpdate === null ? null : new Date(lastUpdate),
+                }),
             },
         });
 
