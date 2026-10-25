@@ -1,4 +1,5 @@
-import { fetchMoexQuote } from '../api/services/moex.service';
+import { fetchMoexQuote, type MoexQuote } from '../api/services/moex.service';
+import { computeProfit } from '../lib/profit';
 import { prisma } from '../lib/prisma';
 import { logger } from '../utils/logger';
 
@@ -16,31 +17,57 @@ async function refreshQuotes(): Promise<void> {
 
     try {
         const stocks = await prisma.stock.findMany({
-            select: { ticker: true },
-            distinct: ['ticker'],
+            select: {
+                id: true,
+                ticker: true,
+                purchasePrice: true,
+                quantity: true,
+            },
         });
 
         if (stocks.length === 0) {
             return;
         }
 
-        const results = await Promise.allSettled(
-            stocks.map(({ ticker }) => fetchMoexQuote(ticker)),
+        const tickers = Array.from(
+            new Set(stocks.map((stock) => stock.ticker)),
         );
 
+        const results = await Promise.allSettled(
+            tickers.map((ticker) => fetchMoexQuote(ticker)),
+        );
+
+        const quotesByTicker = new Map<string, MoexQuote>();
+
         for (const result of results) {
-            if (result.status !== 'fulfilled' || !result.value) {
+            if (result.status === 'fulfilled' && result.value) {
+                quotesByTicker.set(
+                    result.value.ticker,
+                    result.value,
+                );
+            }
+        }
+
+        for (const stock of stocks) {
+            const quote = quotesByTicker.get(stock.ticker);
+
+            if (!quote) {
                 continue;
             }
 
-            const quote = result.value;
+            const profitData = computeProfit(
+                Number(stock.purchasePrice),
+                quote.currentPrice,
+                stock.quantity,
+            );
 
-            await prisma.stock.updateMany({
-                where: { ticker: quote.ticker },
+            await prisma.stock.update({
+                where: { id: stock.id },
                 data: {
                     currentPrice: quote.currentPrice,
                     changePercent: quote.changePercent,
                     lastUpdate: new Date(quote.lastUpdate),
+                    ...profitData,
                 },
             });
         }

@@ -32,6 +32,8 @@ export type StockAvgAggregateOutputType = {
   purchasePrice: runtime.Decimal | null
   currentPrice: runtime.Decimal | null
   changePercent: number | null
+  profit: runtime.Decimal | null
+  profitPercent: number | null
   userId: number | null
 }
 
@@ -41,6 +43,8 @@ export type StockSumAggregateOutputType = {
   purchasePrice: runtime.Decimal | null
   currentPrice: runtime.Decimal | null
   changePercent: number | null
+  profit: runtime.Decimal | null
+  profitPercent: number | null
   userId: number | null
 }
 
@@ -53,6 +57,8 @@ export type StockMinAggregateOutputType = {
   currentPrice: runtime.Decimal | null
   changePercent: number | null
   lastUpdate: Date | null
+  profit: runtime.Decimal | null
+  profitPercent: number | null
   userId: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -67,6 +73,8 @@ export type StockMaxAggregateOutputType = {
   currentPrice: runtime.Decimal | null
   changePercent: number | null
   lastUpdate: Date | null
+  profit: runtime.Decimal | null
+  profitPercent: number | null
   userId: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -81,6 +89,8 @@ export type StockCountAggregateOutputType = {
   currentPrice: number
   changePercent: number
   lastUpdate: number
+  profit: number
+  profitPercent: number
   userId: number
   createdAt: number
   updatedAt: number
@@ -94,6 +104,8 @@ export type StockAvgAggregateInputType = {
   purchasePrice?: true
   currentPrice?: true
   changePercent?: true
+  profit?: true
+  profitPercent?: true
   userId?: true
 }
 
@@ -103,6 +115,8 @@ export type StockSumAggregateInputType = {
   purchasePrice?: true
   currentPrice?: true
   changePercent?: true
+  profit?: true
+  profitPercent?: true
   userId?: true
 }
 
@@ -115,6 +129,8 @@ export type StockMinAggregateInputType = {
   currentPrice?: true
   changePercent?: true
   lastUpdate?: true
+  profit?: true
+  profitPercent?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -129,6 +145,8 @@ export type StockMaxAggregateInputType = {
   currentPrice?: true
   changePercent?: true
   lastUpdate?: true
+  profit?: true
+  profitPercent?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -143,6 +161,8 @@ export type StockCountAggregateInputType = {
   currentPrice?: true
   changePercent?: true
   lastUpdate?: true
+  profit?: true
+  profitPercent?: true
   userId?: true
   createdAt?: true
   updatedAt?: true
@@ -244,6 +264,8 @@ export type StockGroupByOutputType = {
   currentPrice: runtime.Decimal | null
   changePercent: number | null
   lastUpdate: Date | null
+  profit: runtime.Decimal | null
+  profitPercent: number | null
   userId: number
   createdAt: Date
   updatedAt: Date
@@ -281,6 +303,8 @@ export type StockWhereInput = {
   currentPrice?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   lastUpdate?: Prisma.DateTimeNullableFilter<"Stock"> | Date | string | null
+  profit?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   userId?: Prisma.IntFilter<"Stock"> | number
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
@@ -296,6 +320,8 @@ export type StockOrderByWithRelationInput = {
   currentPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   changePercent?: Prisma.SortOrderInput | Prisma.SortOrder
   lastUpdate?: Prisma.SortOrderInput | Prisma.SortOrder
+  profit?: Prisma.SortOrderInput | Prisma.SortOrder
+  profitPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -315,6 +341,8 @@ export type StockWhereUniqueInput = Prisma.AtLeast<{
   currentPrice?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   lastUpdate?: Prisma.DateTimeNullableFilter<"Stock"> | Date | string | null
+  profit?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   userId?: Prisma.IntFilter<"Stock"> | number
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
@@ -330,6 +358,8 @@ export type StockOrderByWithAggregationInput = {
   currentPrice?: Prisma.SortOrderInput | Prisma.SortOrder
   changePercent?: Prisma.SortOrderInput | Prisma.SortOrder
   lastUpdate?: Prisma.SortOrderInput | Prisma.SortOrder
+  profit?: Prisma.SortOrderInput | Prisma.SortOrder
+  profitPercent?: Prisma.SortOrderInput | Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -352,6 +382,8 @@ export type StockScalarWhereWithAggregatesInput = {
   currentPrice?: Prisma.DecimalNullableWithAggregatesFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.FloatNullableWithAggregatesFilter<"Stock"> | number | null
   lastUpdate?: Prisma.DateTimeNullableWithAggregatesFilter<"Stock"> | Date | string | null
+  profit?: Prisma.DecimalNullableWithAggregatesFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.FloatNullableWithAggregatesFilter<"Stock"> | number | null
   userId?: Prisma.IntWithAggregatesFilter<"Stock"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Stock"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Stock"> | Date | string
@@ -365,6 +397,8 @@ export type StockCreateInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutStocksInput
@@ -379,6 +413,8 @@ export type StockUncheckedCreateInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   userId: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -392,6 +428,8 @@ export type StockUpdateInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutStocksNestedInput
@@ -406,6 +444,8 @@ export type StockUncheckedUpdateInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -420,6 +460,8 @@ export type StockCreateManyInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   userId: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -433,6 +475,8 @@ export type StockUpdateManyMutationInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -446,6 +490,8 @@ export type StockUncheckedUpdateManyInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   userId?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -475,6 +521,8 @@ export type StockCountOrderByAggregateInput = {
   currentPrice?: Prisma.SortOrder
   changePercent?: Prisma.SortOrder
   lastUpdate?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
+  profitPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -486,6 +534,8 @@ export type StockAvgOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
   currentPrice?: Prisma.SortOrder
   changePercent?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
+  profitPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -498,6 +548,8 @@ export type StockMaxOrderByAggregateInput = {
   currentPrice?: Prisma.SortOrder
   changePercent?: Prisma.SortOrder
   lastUpdate?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
+  profitPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -512,6 +564,8 @@ export type StockMinOrderByAggregateInput = {
   currentPrice?: Prisma.SortOrder
   changePercent?: Prisma.SortOrder
   lastUpdate?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
+  profitPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -523,6 +577,8 @@ export type StockSumOrderByAggregateInput = {
   purchasePrice?: Prisma.SortOrder
   currentPrice?: Prisma.SortOrder
   changePercent?: Prisma.SortOrder
+  profit?: Prisma.SortOrder
+  profitPercent?: Prisma.SortOrder
   userId?: Prisma.SortOrder
 }
 
@@ -604,6 +660,8 @@ export type StockCreateWithoutUserInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -617,6 +675,8 @@ export type StockUncheckedCreateWithoutUserInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -659,6 +719,8 @@ export type StockScalarWhereInput = {
   currentPrice?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   lastUpdate?: Prisma.DateTimeNullableFilter<"Stock"> | Date | string | null
+  profit?: Prisma.DecimalNullableFilter<"Stock"> | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.FloatNullableFilter<"Stock"> | number | null
   userId?: Prisma.IntFilter<"Stock"> | number
   createdAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Stock"> | Date | string
@@ -673,6 +735,8 @@ export type StockCreateManyUserInput = {
   currentPrice?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: number | null
   lastUpdate?: Date | string | null
+  profit?: runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -685,6 +749,8 @@ export type StockUpdateWithoutUserInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -698,6 +764,8 @@ export type StockUncheckedUpdateWithoutUserInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -711,6 +779,8 @@ export type StockUncheckedUpdateManyWithoutUserInput = {
   currentPrice?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
   changePercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   lastUpdate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  profit?: Prisma.NullableDecimalFieldUpdateOperationsInput | runtime.Decimal | runtime.DecimalJsLike | number | string | null
+  profitPercent?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -726,6 +796,8 @@ export type StockSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   currentPrice?: boolean
   changePercent?: boolean
   lastUpdate?: boolean
+  profit?: boolean
+  profitPercent?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -741,6 +813,8 @@ export type StockSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   currentPrice?: boolean
   changePercent?: boolean
   lastUpdate?: boolean
+  profit?: boolean
+  profitPercent?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -756,6 +830,8 @@ export type StockSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   currentPrice?: boolean
   changePercent?: boolean
   lastUpdate?: boolean
+  profit?: boolean
+  profitPercent?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -771,12 +847,14 @@ export type StockSelectScalar = {
   currentPrice?: boolean
   changePercent?: boolean
   lastUpdate?: boolean
+  profit?: boolean
+  profitPercent?: boolean
   userId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ticker" | "name" | "quantity" | "purchasePrice" | "currentPrice" | "changePercent" | "lastUpdate" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["stock"]>
+export type StockOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "ticker" | "name" | "quantity" | "purchasePrice" | "currentPrice" | "changePercent" | "lastUpdate" | "profit" | "profitPercent" | "userId" | "createdAt" | "updatedAt", ExtArgs["result"]["stock"]>
 export type StockInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
 }
@@ -801,6 +879,8 @@ export type $StockPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     currentPrice: runtime.Decimal | null
     changePercent: number | null
     lastUpdate: Date | null
+    profit: runtime.Decimal | null
+    profitPercent: number | null
     userId: number
     createdAt: Date
     updatedAt: Date
@@ -1236,6 +1316,8 @@ export interface StockFieldRefs {
   readonly currentPrice: Prisma.FieldRef<"Stock", 'Decimal'>
   readonly changePercent: Prisma.FieldRef<"Stock", 'Float'>
   readonly lastUpdate: Prisma.FieldRef<"Stock", 'DateTime'>
+  readonly profit: Prisma.FieldRef<"Stock", 'Decimal'>
+  readonly profitPercent: Prisma.FieldRef<"Stock", 'Float'>
   readonly userId: Prisma.FieldRef<"Stock", 'Int'>
   readonly createdAt: Prisma.FieldRef<"Stock", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Stock", 'DateTime'>

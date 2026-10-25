@@ -93,6 +93,8 @@ export const StockScalarFieldEnum = {
   currentPrice: 'currentPrice',
   changePercent: 'changePercent',
   lastUpdate: 'lastUpdate',
+  profit: 'profit',
+  profitPercent: 'profitPercent',
   userId: 'userId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

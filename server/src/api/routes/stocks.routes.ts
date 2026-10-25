@@ -1,19 +1,23 @@
 import { Router } from 'express';
 
+import { computeProfit } from '../../lib/profit';
 import { prisma } from '../../lib/prisma';
 import { toStockDto } from '../dto/stock.dto';
+import {
+    getStocksPage,
+    parseStocksPageParams,
+} from '../services/stocks.service';
 
 const router = Router();
 
-router.get('/', async (_req, res, next) => {
+router.get('/', async (req, res, next) => {
     try {
-        const stocks = await prisma.stock.findMany({
-            orderBy: {
-                createdAt: 'desc',
-            },
-        });
+        const params = parseStocksPageParams(
+            req.query as Record<string, unknown>,
+        );
+        const stocksPage = await getStocksPage(params);
 
-        res.json(stocks.map(toStockDto));
+        res.json(stocksPage);
     } catch (error) {
         next(error);
     }
@@ -117,6 +121,21 @@ router.post('/', async (req, res, next) => {
                     purchasePrice * quantity) /
                 totalQuantity;
 
+            const mergedCurrentPrice =
+                typeof currentPrice === 'number' &&
+                Number.isFinite(currentPrice) &&
+                currentPrice > 0
+                    ? currentPrice
+                    : existingStock.currentPrice == null
+                        ? null
+                        : Number(existingStock.currentPrice);
+
+            const mergedProfit = computeProfit(
+                weightedPurchasePrice,
+                mergedCurrentPrice,
+                totalQuantity,
+            );
+
             const mergedStock = await prisma.stock.update({
                 where: { id: existingStock.id },
                 data: {
@@ -124,12 +143,26 @@ router.post('/', async (req, res, next) => {
                     quantity: totalQuantity,
                     purchasePrice: weightedPurchasePrice,
                     ...marketData,
+                    ...mergedProfit,
                 },
             });
 
             res.json(toStockDto(mergedStock));
             return;
         }
+
+        const createdCurrentPrice =
+            typeof currentPrice === 'number' &&
+            Number.isFinite(currentPrice) &&
+            currentPrice > 0
+                ? currentPrice
+                : null;
+
+        const createdProfit = computeProfit(
+            purchasePrice,
+            createdCurrentPrice,
+            quantity,
+        );
 
         const stock = await prisma.stock.create({
             data: {
@@ -139,6 +172,7 @@ router.post('/', async (req, res, next) => {
                 purchasePrice,
                 userId,
                 ...marketData,
+                ...createdProfit,
             },
         });
 
@@ -212,6 +246,29 @@ router.patch('/:id', async (req, res, next) => {
             return;
         }
 
+        const nextPurchasePrice =
+            purchasePrice !== undefined
+                ? purchasePrice
+                : Number(existingStock.purchasePrice);
+
+        const nextQuantity =
+            quantity !== undefined
+                ? quantity
+                : existingStock.quantity;
+
+        const nextCurrentPrice =
+            currentPrice !== undefined
+                ? currentPrice
+                : existingStock.currentPrice == null
+                    ? null
+                    : Number(existingStock.currentPrice);
+
+        const updatedProfit = computeProfit(
+            nextPurchasePrice,
+            nextCurrentPrice,
+            nextQuantity,
+        );
+
         const stock = await prisma.stock.update({
             where: { id },
             data: {
@@ -227,6 +284,7 @@ router.patch('/:id', async (req, res, next) => {
                     lastUpdate:
                         lastUpdate === null ? null : new Date(lastUpdate),
                 }),
+                ...updatedProfit,
             },
         });
 

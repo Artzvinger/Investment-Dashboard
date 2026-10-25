@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useMultipleStocks } from '../../../entities/stock/model/moexQueries';
 import {
@@ -10,17 +10,36 @@ import {
     formatPercent,
 } from '../../../shared/lib/format';
 
+import { useAssetListParams } from '../model/useAssetListParams';
+
 import AddAssetForm from './AddAssetForm';
 import AssetDetailsModal from './AssetDetailsModal';
 import AssetItem from './AssetItem';
+import AssetListToolbar from './AssetListToolbar';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
+import Pagination from './Pagination';
+
+const EMPTY_SUMMARY = {
+    invested: 0,
+    value: 0,
+    profit: 0,
+    profitPercent: 0,
+};
 
 function AssetList() {
     const {
-        data: stocks = [],
+        params,
+        searchInput,
+        setSearchInput,
+        updateParams,
+    } = useAssetListParams();
+
+    const {
+        data,
         isLoading,
+        isFetching,
         error,
-    } = useStocksQuery();
+    } = useStocksQuery(params);
 
     const deleteStockMutation = useDeleteStockMutation();
 
@@ -33,6 +52,11 @@ function AssetList() {
         ticker: string;
         name: string;
     } | null>(null);
+
+    const stocks = data?.items ?? [];
+    const summary = data?.summary ?? EMPTY_SUMMARY;
+    const total = data?.total ?? 0;
+    const totalPages = data?.totalPages ?? 1;
 
     const tickers = useMemo(
         () => Array.from(new Set(stocks.map((stock) => stock.ticker))),
@@ -55,27 +79,6 @@ function AssetList() {
         [stocks, quotesByTicker],
     );
 
-    const totals = useMemo(() => {
-        let invested = 0;
-        let value = 0;
-
-        for (const { stock, quote } of rows) {
-            const unitPrice =
-                quote?.currentPrice ??
-                stock.currentPrice ??
-                stock.purchasePrice;
-
-            invested += stock.purchasePrice * stock.quantity;
-            value += unitPrice * stock.quantity;
-        }
-
-        const profit = value - invested;
-        const profitPercent =
-            invested > 0 ? (profit / invested) * 100 : 0;
-
-        return { invested, value, profit, profitPercent };
-    }, [rows]);
-
     const lastUpdated = useMemo(() => {
         const timestamps = quotes
             .map((quote) => Date.parse(quote.lastUpdate))
@@ -87,6 +90,12 @@ function AssetList() {
 
         return new Date(Math.max(...timestamps));
     }, [quotes]);
+
+    useEffect(() => {
+        if (data && params.page > data.totalPages) {
+            updateParams({ page: data.totalPages });
+        }
+    }, [data, params.page, updateParams]);
 
     const selectedRow =
         rows.find(({ stock }) => stock.id === selectedStockId) ?? null;
@@ -117,11 +126,14 @@ function AssetList() {
     }
 
     const profitClass =
-        totals.profit > 0
+        summary.profit > 0
             ? 'asset-list__profit asset-list__profit--positive'
-            : totals.profit < 0
+            : summary.profit < 0
                 ? 'asset-list__profit asset-list__profit--negative'
                 : 'asset-list__profit';
+
+    const hasFilters =
+        Boolean(params.search) || params.filter !== 'all';
 
     return (
         <div className="asset-list">
@@ -133,12 +145,12 @@ function AssetList() {
 
                     <div className={profitClass}>
                         <span className="asset-list__profit-value">
-                            {totals.profit > 0 ? '+' : ''}
-                            {formatMoney(totals.profit)}
+                            {summary.profit > 0 ? '+' : ''}
+                            {formatMoney(summary.profit)}
                         </span>
 
                         <span className="asset-list__profit-percent">
-                            {formatPercent(totals.profitPercent)}
+                            {formatPercent(summary.profitPercent)}
                         </span>
                     </div>
                 </div>
@@ -150,7 +162,7 @@ function AssetList() {
                         </div>
 
                         <div className="asset-list__summary-value">
-                            {formatMoney(totals.value)}
+                            {formatMoney(summary.value)}
                         </div>
                     </div>
 
@@ -160,7 +172,7 @@ function AssetList() {
                         </div>
 
                         <div className="asset-list__summary-value">
-                            {formatMoney(totals.invested)}
+                            {formatMoney(summary.invested)}
                         </div>
                     </div>
 
@@ -180,53 +192,87 @@ function AssetList() {
 
             <AddAssetForm />
 
+            <AssetListToolbar
+                search={searchInput}
+                onSearchChange={setSearchInput}
+                filter={params.filter}
+                onFilterChange={(filter) =>
+                    updateParams({ filter, page: 1 })
+                }
+                sort={params.sort}
+                order={params.order}
+                onSortChange={(sort, order) =>
+                    updateParams({ sort, order, page: 1 })
+                }
+            />
+
             {isLoading && (
                 <div className="asset-list__loading">
                     ⏳ Загрузка акций...
                 </div>
             )}
 
-            {!isLoading && stocks.length === 0 && (
+            {!isLoading && total === 0 && (
                 <p className="asset-list__empty">
-                    Нет акций. Нажмите «+ Добавить акцию»
+                    {hasFilters
+                        ? 'Ничего не найдено. Попробуйте изменить поиск или фильтры.'
+                        : 'Нет акций. Нажмите «+ Добавить акцию»'}
                 </p>
             )}
 
-            {stocks.length > 0 && (
-                <div className="asset-list__table">
-                    <div className="asset-list__table-header">
-                        <div>Акция</div>
-                        <div>Кол-во</div>
-                        <div>Цена покупки</div>
-                        <div>Текущая цена</div>
-                        <div>Изменение</div>
-                        <div></div>
+            {total > 0 && (
+                <>
+                    <div
+                        className={
+                            isFetching
+                                ? 'asset-list__table asset-list__table--fetching'
+                                : 'asset-list__table'
+                        }
+                    >
+                        <div className="asset-list__table-header">
+                            <div>Акция</div>
+                            <div>Кол-во</div>
+                            <div>Цена покупки</div>
+                            <div>Текущая цена</div>
+                            <div>Изменение</div>
+                            <div></div>
+                        </div>
+
+                        {rows.map(({ stock, quote }) => (
+                            <AssetItem
+                                key={stock.id}
+                                stock={stock}
+                                quote={quote}
+                                onSelect={() =>
+                                    setSelectedStockId(stock.id)
+                                }
+                                onRequestRemove={() => {
+                                    deleteStockMutation.reset();
+                                    setPendingDelete({
+                                        id: stock.id,
+                                        ticker: stock.ticker,
+                                        name: stock.name,
+                                    });
+                                }}
+                            />
+                        ))}
                     </div>
 
-                    {rows.map(({ stock, quote }) => (
-                        <AssetItem
-                            key={stock.id}
-                            stock={stock}
-                            quote={quote}
-                            onSelect={() => setSelectedStockId(stock.id)}
-                            onRequestRemove={() => {
-                                deleteStockMutation.reset();
-                                setPendingDelete({
-                                    id: stock.id,
-                                    ticker: stock.ticker,
-                                    name: stock.name,
-                                });
-                            }}
-                        />
-                    ))}
-                </div>
+                    <Pagination
+                        page={params.page}
+                        totalPages={totalPages}
+                        onPageChange={(page) =>
+                            updateParams({ page })
+                        }
+                    />
+                </>
             )}
 
             {selectedRow && (
                 <AssetDetailsModal
                     stock={selectedRow.stock}
                     quote={selectedRow.quote}
-                    portfolioValue={totals.value}
+                    portfolioValue={summary.value}
                     onClose={() => setSelectedStockId(null)}
                 />
             )}

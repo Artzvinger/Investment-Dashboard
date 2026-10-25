@@ -27,6 +27,8 @@ model Stock {
   currentPrice  Decimal?  @db.Decimal(18, 4)
   changePercent Float?
   lastUpdate    DateTime?
+  profit        Decimal?  @db.Decimal(18, 4)
+  profitPercent Float?
 
   userId        Int
   user          User     @relation(fields: [userId], references: [id])

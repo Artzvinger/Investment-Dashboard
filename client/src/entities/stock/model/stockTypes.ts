@@ -7,6 +7,8 @@ export interface Stock {
     currentPrice: number | null;
     changePercent: number | null;
     lastUpdate: string | null;
+    profit: number | null;
+    profitPercent: number | null;
     userId: number;
     createdAt: string;
     updatedAt: string;
@@ -35,3 +37,32 @@ export type UpdateStockInput = Partial<
         'currentPrice' | 'changePercent' | 'lastUpdate'
     >
 >;
+
+export type StockFilter = 'all' | 'profitable' | 'losing';
+export type StockSort = 'date' | 'ticker' | 'price' | 'profit';
+export type SortOrder = 'asc' | 'desc';
+
+export interface StocksQueryParams {
+    search?: string;
+    filter?: StockFilter;
+    sort?: StockSort;
+    order?: SortOrder;
+    page?: number;
+    limit?: number;
+}
+
+export interface PortfolioSummary {
+    invested: number;
+    value: number;
+    profit: number;
+    profitPercent: number;
+}
+
+export interface StocksPage {
+    items: Stock[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    summary: PortfolioSummary;
+}

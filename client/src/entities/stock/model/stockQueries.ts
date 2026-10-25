@@ -1,4 +1,5 @@
 import {
+    keepPreviousData,
     useMutation,
     useQuery,
     useQueryClient,
@@ -8,19 +9,25 @@ import { stockApi } from '../api/stockApi';
 
 import type {
     CreateStockInput,
+    StocksQueryParams,
     UpdateStockInput,
 } from './stockTypes';
 
 export const STOCKS_QUERY_KEY = {
     all: ['stocks'] as const,
+    list: (params: StocksQueryParams) =>
+        ['stocks', 'list', params] as const,
     detail: (id: number) => ['stocks', id] as const,
     prices: (tickers: string[]) => ['stocks', 'prices', tickers] as const,
 };
 
-export function useStocksQuery() {
+export function useStocksQuery(
+    params: StocksQueryParams = {},
+) {
     return useQuery({
-        queryKey: STOCKS_QUERY_KEY.all,
-        queryFn: stockApi.getAll,
+        queryKey: STOCKS_QUERY_KEY.list(params),
+        queryFn: () => stockApi.getAll(params),
+        placeholderData: keepPreviousData,
         staleTime: 10_000,
         refetchInterval: 10_000,
         retry: 2,

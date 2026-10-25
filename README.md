@@ -9,6 +9,7 @@
 ## Возможности
 
 - 📈 Портфель акций с живыми котировками MOEX.
+- 🔎 Поиск по тикеру/названию, фильтры (прибыльные/убыточные), сортировка и пагинация.
 - 💰 Общая прибыль/убыток портфеля в рублях и процентах.
 - 📊 Детали по каждой акции в модальном окне: цена покупки, текущая цена, вложено, стоимость позиции, доля в портфеле, дневное изменение, дата покупки.
 - ➕ Добавление акции по тикеру с автоподстановкой названия и цены с MOEX.
@@ -199,7 +200,8 @@ npm run db:clear-stocks  # очистить таблицу Stock
 
 Особенности модели:
 
-- `Stock.purchasePrice` и `Stock.currentPrice` — `Decimal(18, 4)`.
+- `Stock.purchasePrice`, `Stock.currentPrice` и `Stock.profit` — `Decimal(18, 4)`.
+- `Stock.profitPercent` — процент прибыли, обновляется фоновым джобом.
 - Уникальный индекс `(ticker, userId)`: повторное добавление тикера **увеличивает позицию** и пересчитывает средневзвешенную цену покупки.
 - API отдаёт числа через DTO (`server/src/api/dto/stock.dto.ts`).
 
@@ -210,13 +212,42 @@ npm run db:clear-stocks  # очистить таблицу Stock
 | Метод | Путь | Описание |
 |---|---|---|
 | GET | `/api/health` | health-check |
-| GET | `/api/stocks` | список акций |
+| GET | `/api/stocks` | список акций с поиском/фильтрами/пагинацией |
 | POST | `/api/stocks` | добавить акцию (при повторе тикера — слияние позиции) |
 | GET | `/api/stocks/:id` | одна акция |
 | PATCH | `/api/stocks/:id` | обновить акцию/цены |
 | DELETE | `/api/stocks/:id` | удалить акцию |
 | GET | `/api/moex/stocks/:ticker` | котировка одной акции |
 | GET | `/api/moex/quotes?tickers=SBER,GAZP` | батч котировок |
+
+Параметры `GET /api/stocks`:
+
+| Параметр | Значения | По умолчанию |
+|---|---|---|
+| `search` | строка (тикер/название) | — |
+| `filter` | `all` \| `profitable` \| `losing` | `all` |
+| `sort` | `date` \| `ticker` \| `price` \| `profit` | `date` |
+| `order` | `asc` \| `desc` | `desc` |
+| `page` | ≥ 1 | `1` |
+| `limit` | 1–50 | `10` |
+
+Ответ:
+
+```json
+{
+  "items": [ ... ],
+  "total": 4,
+  "page": 1,
+  "limit": 10,
+  "totalPages": 1,
+  "summary": {
+    "invested": 5491.3,
+    "value": 5504.79,
+    "profit": 13.49,
+    "profitPercent": 0.25
+  }
+}
+```
 
 Пример:
 

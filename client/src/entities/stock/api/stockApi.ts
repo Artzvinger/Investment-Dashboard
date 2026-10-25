@@ -4,18 +4,29 @@ import type {
     CreateStockInput,
     MoexStock,
     Stock,
+    StocksPage,
+    StocksQueryParams,
     UpdateStockInput,
 } from '../model/stockTypes';
 
 export const stockApi = {
-    async getAll(): Promise<Stock[]> {
-        const { data } = await httpClient.get('/stocks');
+    async getAll(
+        params: StocksQueryParams = {},
+    ): Promise<StocksPage> {
+        const { data } = await httpClient.get<StocksPage>(
+            '/stocks',
+            {
+                params,
+            },
+        );
 
-        if (!Array.isArray(data)) {
-            throw new Error('API /stocks должен возвращать массив акций');
+        if (!data || !Array.isArray(data.items)) {
+            throw new Error(
+                'API /stocks должен возвращать страницу акций',
+            );
         }
 
-        return data as Stock[];
+        return data;
     },
 
     async getOne(id: number): Promise<Stock> {

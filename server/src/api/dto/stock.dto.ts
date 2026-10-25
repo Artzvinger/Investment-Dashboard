@@ -9,6 +9,8 @@ export interface StockDto {
     currentPrice: number | null;
     changePercent: number | null;
     lastUpdate: string | null;
+    profit: number | null;
+    profitPercent: number | null;
     userId: number;
     createdAt: string;
     updatedAt: string;
@@ -27,6 +29,9 @@ export function toStockDto(stock: Stock): StockDto {
                 : Number(stock.currentPrice),
         changePercent: stock.changePercent,
         lastUpdate: stock.lastUpdate?.toISOString() ?? null,
+        profit:
+            stock.profit == null ? null : Number(stock.profit),
+        profitPercent: stock.profitPercent,
         userId: stock.userId,
         createdAt: stock.createdAt.toISOString(),
         updatedAt: stock.updatedAt.toISOString(),
