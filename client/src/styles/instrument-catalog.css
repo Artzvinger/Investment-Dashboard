@@ -1,0 +1,83 @@
+/* Instrument catalog (stocks / bonds) */
+
+.instrument-catalog {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.instrument-catalog__header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.instrument-catalog__updated {
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+}
+
+.instrument-catalog__toolbar {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow-card);
+}
+
+.instrument-catalog__search {
+    flex: 1 1 220px;
+    min-width: 180px;
+}
+
+.instrument-catalog__filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.instrument-catalog__chip {
+    min-height: 34px;
+    padding: 6px 12px;
+    color: var(--text-secondary);
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.instrument-catalog__chip:hover:not(:disabled) {
+    color: var(--text-primary);
+    background: var(--bg-hover);
+}
+
+.instrument-catalog__chip--active {
+    color: var(--accent-text);
+    background: var(--accent);
+    border-color: transparent;
+}
+
+.instrument-catalog__table {
+    max-height: 70vh;
+    overflow-y: auto;
+}
+
+.instrument-catalog__table thead th {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background: #202722;
+}
+
+.instrument-catalog__table--fetching {
+    opacity: 0.6;
+    transition: opacity var(--transition);
+}

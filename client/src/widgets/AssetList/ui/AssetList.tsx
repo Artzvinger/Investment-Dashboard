@@ -9,6 +9,7 @@ import {
     formatMoney,
     formatPercent,
 } from '../../../shared/lib/format';
+import Pagination from '../../../shared/ui/Pagination/Pagination';
 
 import { useAssetListParams } from '../model/useAssetListParams';
 
@@ -17,7 +18,6 @@ import AssetDetailsModal from './AssetDetailsModal';
 import AssetItem from './AssetItem';
 import AssetListToolbar from './AssetListToolbar';
 import ConfirmDeleteModal from './ConfirmDeleteModal';
-import Pagination from './Pagination';
 
 const EMPTY_SUMMARY = {
     invested: 0,

@@ -14,7 +14,7 @@ function Pagination({
     }
 
     return (
-        <div className="asset-list__pagination">
+        <div className="pagination">
             <button
                 type="button"
                 className="button-secondary"
@@ -24,7 +24,7 @@ function Pagination({
                 ← Назад
             </button>
 
-            <span className="asset-list__pagination-info">
+            <span className="pagination__info">
                 Страница {page} из {totalPages}
             </span>
 

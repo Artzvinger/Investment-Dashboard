@@ -1,6 +1,11 @@
 import { Router } from 'express';
 
 import {
+    getInstruments,
+    parseInstrumentsQuery,
+    type InstrumentMarket,
+} from '../services/moex-catalog.service';
+import {
     fetchMoexQuote,
     isValidTicker,
     type MoexQuote,
@@ -9,6 +14,21 @@ import {
 const router = Router();
 
 const MAX_BATCH_TICKERS = 50;
+
+router.get('/instruments', async (req, res, next) => {
+    try {
+        const market: InstrumentMarket =
+            req.query.market === 'bonds' ? 'bonds' : 'shares';
+        const query = parseInstrumentsQuery(
+            req.query as Record<string, unknown>,
+        );
+        const data = await getInstruments(market, query);
+
+        res.json(data);
+    } catch (error) {
+        next(error);
+    }
+});
 
 router.get('/stocks/:ticker', async (req, res, next) => {
     try {

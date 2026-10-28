@@ -1,8 +1,9 @@
+import InstrumentCatalog from '../../widgets/InstrumentCatalog/ui/InstrumentCatalog';
+
 function BondsPage() {
     return (
         <main className="page">
-            <h1>🏦 Облигации</h1>
-            <p>Здесь будет список облигаций</p>
+            <InstrumentCatalog market="bonds" />
         </main>
     );
 }

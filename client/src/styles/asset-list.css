@@ -313,23 +313,6 @@
     background: #344137;
 }
 
-/* Pagination */
-
-.asset-list__pagination {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-wrap: wrap;
-    gap: 14px;
-    padding: 4px 0;
-}
-
-.asset-list__pagination-info {
-    color: var(--text-secondary);
-    font-size: 12px;
-    font-variant-numeric: tabular-nums;
-}
-
 /* Loading state of the table */
 
 .asset-list__table--fetching {
